@@ -2,14 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-def plot_astronomy_comparison(orig, pred, psnr):
+def plot_astronomy_comparison(orig, pred, psnr, save_dir=None):
     """
     天文专用绘图：仅依赖 orig, pred, psnr。
     - PSNR > 40 才画图
     - Colorbar 强制只显示 5 个刻度
-    - 自动保存到 ./astro_plots
+    - 自动保存到 save_dir (默认 ./astro_plots)
     """
-    
+
     # 1. 阈值检查
     #:if psnr <= 20.0:
     #@    return None
@@ -60,12 +60,12 @@ def plot_astronomy_comparison(orig, pred, psnr):
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     
     # 4. 自动保存
-    save_dir = Path("./astro_plots")
-    save_dir.mkdir(exist_ok=True)
+    save_dir = Path(save_dir) if save_dir else Path("./astro_plots")
+    save_dir.mkdir(parents=True, exist_ok=True)
     filename = f"result_psnr{psnr:.2f}.png"
-    
+
     plt.savefig(save_dir / filename, bbox_inches='tight', dpi=300, facecolor='white')
     plt.close(fig)
-    
+
     print(f"✅ Saved: {save_dir / filename} (Colorbars limited to 5 ticks)")
     return True

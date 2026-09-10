@@ -14,7 +14,7 @@ model:
 data:
   class_path: imgtok.data.CosmoGridDataModule
   init_args:
-    root_dir: /mnt/si0009256k6u/default/Tomasz-FHNW/CosmoGrid_Working/vqvae_update_paper/cosmogrid_data
+    root_dir: data/cosmogrid_data
     batch_size: 128
     num_threads: 32
     num_cpu_workers: 32
@@ -26,7 +26,7 @@ trainer:
     class_path: lightning.pytorch.loggers.WandbLogger
     init_args:
       project: "cosmogrid"
-      save_dir: /home/nisl/Works/Yunchuan_OneAstronomy/cache/cosmogrid/
+      save_dir: cache/cosmogrid/
   callbacks:
     - class_path: lightning.pytorch.callbacks.ModelCheckpoint
       init_args:
@@ -40,7 +40,7 @@ trainer:
     - class_path: lightning.pytorch.callbacks.LearningRateMonitor
       init_args:
         logging_interval: step
-  default_root_dir:  /home/nisl/Works/Yunchuan_OneAstronomy/cache/0
+  default_root_dir:  cache/0
   max_epochs: 1001
   min_epochs: 1
   val_check_interval: 200

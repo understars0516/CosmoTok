@@ -1,0 +1,40 @@
+# CosmoTok — runtime dependencies (training + inference + analysis)
+#
+# The `aion/` directory in this repo is a LOCAL source package and is used in
+# place of the `polymathic-aion` PyPI package. Do NOT install polymathic-aion;
+# keep the repo root on PYTHONPATH instead (inference.py / run_adv.sh do this
+# automatically).
+
+# --- ML / model ---
+torch==2.9.1
+torchvision==0.24.1
+torchaudio==2.9.1
+numpy==2.3.5
+scipy>=1.17.0
+einops
+jaxtyping
+jsonargparse[signatures]>=4.45.0
+lightning[pytorch-extra]>=2.6.0
+torchmetrics>=1.8.2
+
+# --- Data pipeline ---
+spdl>=0.2.0
+intervaltree>=3.2.1
+h5py>=3.15.1
+numba>=0.63.1
+polars>=1.37.1
+joblib>=1.5.3
+
+# --- Astro / plotting ---
+astropy>=7.2.0
+healpy
+matplotlib>=3.10.8
+
+# --- Optional (training logging / perceptual loss) ---
+wandb>=0.24.0
+lpips
+
+# --- CUDA compatibility pins (do not remove) ---
+# Node driver 570.x supports CUDA up to 12.8. PyPI default builds: torch<=2.9.1
+# is cu128; torch>=2.10 is cu130 (needs R580+ driver) and will fail with
+# "NVIDIA driver too old". If you upgrade torch, also upgrade the driver/node.

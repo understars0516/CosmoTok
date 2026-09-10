@@ -15,9 +15,11 @@ Usage:
         --ckpt weights/best_cosmogrid_adv.ckpt \
         --data-root data/cosmogrid_data \
         --content-file data/cosmogrid_data/content/baryonified512_036.npy \
-        --rearr rearr_nside512.npy \
         --out-dir ./outputs \
         --save-maps --save-cl --save-patches
+
+    --rearr is optional: if not given, the patch->HEALPix permutation is derived
+    from <data-root>/arr_nside512_192x128x128.npy (argsort of the flattened array).
 """
 
 import argparse
@@ -46,6 +48,27 @@ def load_model(ckpt_path: str, device: str) -> torch.nn.Module:
     model = CosmoGridImageAutoEncoderAdv.load_from_checkpoint(ckpt_path, map_location="cpu")
     model.eval()
     return model.to(device)
+
+
+def load_rearr(rearr_path: str | None, data_root: str) -> np.ndarray:
+    """Load the patch->HEALPix pixel permutation (int64, shape (3145728,)).
+
+    Priority:
+      1. an explicit rearr_nside512.npy file (when --rearr is given and present);
+      2. derived from <data-root>/arr_nside512_192x128x128.npy via argsort(.reshape(-1)).
+    """
+    if rearr_path and Path(rearr_path).is_file():
+        print(f"Loading rearrangement index from {rearr_path}")
+        return np.load(rearr_path).astype(np.int64)
+    arr_path = Path(data_root) / "arr_nside512_192x128x128.npy"
+    if arr_path.is_file():
+        print(f"Deriving rearrangement index from {arr_path} (argsort of flattened array)")
+        arr = np.load(arr_path).reshape(-1)
+        return np.argsort(arr).astype(np.int64)
+    raise FileNotFoundError(
+        "Could not find a rearrangement index. Either pass --rearr <rearr_nside512.npy>, "
+        f"or place arr_nside512_192x128x128.npy under the data root ({data_root})."
+    )
 
 
 def preprocess(sample: np.ndarray) -> torch.Tensor:
@@ -114,7 +137,9 @@ def main() -> int:
     ap.add_argument("--ckpt", required=True)
     ap.add_argument("--data-root", required=True)
     ap.add_argument("--content-file", required=True)
-    ap.add_argument("--rearr", default="rearr_nside512.npy")
+    ap.add_argument("--rearr", default=None,
+                    help="patch->HEALPix permutation .npy; if omitted, derived from "
+                         "<data-root>/arr_nside512_192x128x128.npy")
     ap.add_argument("--out-dir", default="./outputs")
     ap.add_argument("--split", default="test")
     ap.add_argument("--save-maps", action="store_true")
@@ -139,7 +164,7 @@ def main() -> int:
     print(f"Reconstructed {recon.shape[0]} patches in [{recon.shape[1]}x{recon.shape[2]}]")
 
     # 3. compose into full nside=512 sky map
-    rearr = np.load(args.rearr).astype(np.int64)
+    rearr = load_rearr(args.rearr, args.data_root)
     orig_sky = compose_sky_map(field_orig, rearr)
     recon_sky = compose_sky_map(recon, rearr)
     nside = 512

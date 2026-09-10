@@ -5,6 +5,15 @@ weights/*.ckpt.part*
 weights/*.ckpt.manifest.json
 data/cosmogrid_data/content/*.npy
 
+# ---- Generated outputs (training / inference / analysis) ----
+cache/
+outputs/
+results/
+wandb/
+*.log
+assets/recon_patch_montage.png
+TT_cl_comparison_diff.png
+
 # ---- Python caches ----
 __pycache__/
 *.py[cod]

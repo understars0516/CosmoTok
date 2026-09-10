@@ -91,7 +91,7 @@ if [[ -n "${USER_SITE}" && -d "${USER_SITE}" ]]; then
 fi
 export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${SCRIPT_DIR}:${SCRIPT_DIR}/src"
 
-CONFIG_PATH="${1:-src/imgtok/cfg-cosmo-adv.yaml}"
+CONFIG_PATH="${1:-src/imgtok/cfg-cosmo.yaml}"
 shift || true
 
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0,1,2,3}" \

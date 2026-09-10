@@ -7,9 +7,11 @@ from pathlib import Path
 import numpy as np
 import torch
 
-_ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(_ROOT))
-sys.path.insert(0, str(_ROOT / "src"))
+_ROOT = Path(__file__).resolve().parent          # .../upload_github/analysis
+_REPO = _ROOT.parent                              # .../upload_github
+sys.path.insert(0, str(_ROOT))                    # sibling utils: plot_plot, ssim_psnr_iou
+sys.path.insert(0, str(_REPO / "src"))            # imgtok, astro_utils
+sys.path.insert(0, str(_REPO))                    # aion
 
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/mplcache")
 Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)
@@ -76,7 +78,7 @@ def _to_2d_for_plot(arr: np.ndarray) -> np.ndarray:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data-root", type=str, default="/mnt/si0009256k6u/default/Tomasz-FHNW/CosmoGrid_Working/vqvae_update_paper/cosmogrid_data")
+    parser.add_argument("--data-root", type=str, default=str(_REPO / "data" / "cosmogrid_data"))
     parser.add_argument("--split", type=str, default="test", choices=["train", "valid", "test"])
     parser.add_argument("--ckpt", type=str, default="")
     parser.add_argument("--prefer-adv", action="store_true")
@@ -84,7 +86,10 @@ def main() -> int:
     parser.add_argument("--samples-per-segment", type=int, default=0)
     parser.add_argument("--psnr-threshold", type=float, default=35.0)
     parser.add_argument("--output-dir", type=str, default="results")
-    parser.add_argument("--expected-shape", type=str, default="192,128,128")
+    parser.add_argument("--expected-shape", type=str, default="128,128",
+                        help="shape a single sample must have to be evaluated. CosmoGrid "
+                             "content files are (192,128,128) fields iterated per-patch, "
+                             "so each sample is (128,128).")
     parser.add_argument("--best-npy-name", type=str, default="")
     parser.add_argument("--plot-threshold", action="store_true")
     parser.add_argument("--no-plot-best", action="store_false", dest="plot_best", default=True)
@@ -95,10 +100,7 @@ def main() -> int:
     content_dir = data_root / "content"
 
     if not args.ckpt:
-        args.ckpt = (
-            "/mnt/si0009256k6u/default/Tomasz-FHNW/CosmoGrid_Working/vqvae_update_paper/checkpoints/"
-            "epoch=0999-step=024000-val_mse=0.145829.ckpt"
-        )
+        args.ckpt = str(_REPO / "weights" / "best_cosmogrid_adv.ckpt")
 
     model = _load_model(args.ckpt, prefer_adv=args.prefer_adv)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -159,7 +161,7 @@ def main() -> int:
             if args.plot_threshold and psnr > args.psnr_threshold:
                 print(f"{args.split} seg={seg_idx+1}/{max_segments} file={filepath}")
                 print(f"PSNR={psnr:.4f} SSIM={ssim:.6f} IoU={iou:.6f}")
-                plot_astronomy_comparison(original, pred, psnr)
+                plot_astronomy_comparison(original, pred, psnr, save_dir=output_dir)
 
             if psnr > best_psnr:
                 best_psnr = float(psnr)
@@ -179,7 +181,8 @@ def main() -> int:
         f"Best PSNR={best_psnr:.6f} saved={best_path} seg={seg_idx+1}/{max_segments} i={local_i} file={filepath}"
     )
     if args.plot_best:
-        plot_astronomy_comparison(_to_2d_for_plot(best_original), _to_2d_for_plot(best_pred), best_psnr)
+        plot_astronomy_comparison(_to_2d_for_plot(best_original), _to_2d_for_plot(best_pred), best_psnr,
+                                  save_dir=output_dir)
 
     return 0
 

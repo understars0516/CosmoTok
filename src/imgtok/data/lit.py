@@ -1,11 +1,11 @@
-import typing
-
 import lightning as ltn
 from imgtok.data.datasets import SPDLAstroImageDatasetAION, SPDLAstroImageDatasetStats, SPDLCosmogridDataset
 from torch.utils.data import DataLoader
 
-if typing.TYPE_CHECKING:
-    from jsonargparse.typing import Path_drw
+# NOTE: `root_dir` is typed as `str` (not jsonargparse `Path_drw`) so that relative
+# paths in the YAML config resolve against the current working directory (the project
+# root when launched via run_adv.sh) rather than against the config file's directory,
+# which is jsonargparse's default behaviour for `Path_drw` and breaks portable repos.
 
 
 # see https://lightning.ai/docs/pytorch/stable/data/datamodule.html for how to create a custom datamodule
@@ -13,7 +13,7 @@ class ImageDataModuleAION(ltn.LightningDataModule):
     # noinspection PyTypeHints
     def __init__(
             self,
-            root_dir: "Path_drw",
+            root_dir: str,
             batch_size: int = 128,
             num_threads: int = 64,
             num_cpu_workers: int = 8,
@@ -102,7 +102,7 @@ class ImageDataModuleStats(ltn.LightningDataModule):
     # noinspection PyTypeHints
     def __init__(
             self,
-            root_dir: "Path_drw",
+            root_dir: str,
             batch_size: int = 128,
             num_threads: int = 64,
             num_cpu_workers: int = 8,
@@ -191,7 +191,7 @@ class CosmoGridDataModule(ltn.LightningDataModule):
     # noinspection PyTypeHints
     def __init__(
             self,
-            root_dir: "Path_drw",
+            root_dir: str,
             batch_size: int = 128,
             num_threads: int = 32,
             num_cpu_workers: int = 8,
