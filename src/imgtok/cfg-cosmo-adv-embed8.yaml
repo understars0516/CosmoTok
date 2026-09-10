@@ -1,0 +1,103 @@
+model:
+  class_path: imgtok.model.CosmoGridImageAutoEncoderAdv
+  init_args:
+    hidden_dims: 768
+    embedding_dim: 8
+    downsampled_channel_dim: 128
+    quantizer_levels: [17, 17, 17, 17, 9, 9, 9, 9]
+    n_compressions: 2
+    num_consecutive: 4
+    warmup_steps: 1000
+    disc_start: 4800
+    disc_in_channels: 1
+    disc_num_layers: 3
+    disc_ndf: 64
+    disc_factor: 1.0
+    disc_weight: 0.5
+    disc_loss: hinge
+    perceptual_weight: 0.01
+    pixelloss_weight: 1.0
+    logvar_init: 0.0
+    lpips_in_channels: 1
+    use_actnorm: false
+    disc_lr: 2.0e-5
+    ae_lr: 5.0e-5
+    ae_betas: [0.9, 0.95]
+    ae_weight_decay: 0.01
+    ae_scheduler_type: cosine_annealing
+    ae_scheduler_t_max: 1000
+    ae_scheduler_eta_min: 1e-6
+
+data:
+  class_path: imgtok.data.CosmoGridDataModule
+  init_args:
+    root_dir: /mnt/si0009256k6u/default/Tomasz-FHNW/CosmoGrid_Working/vqvae_update_paper/cosmogrid_data
+    batch_size: 128
+    num_threads: 32
+    num_cpu_workers: 16
+    num_io_workers: 16
+    num_dataloader_workers: 0
+
+trainer:
+  logger:
+    class_path: lightning.pytorch.loggers.WandbLogger
+    init_args:
+      project: cosmogrid_adv
+      save_dir: /home/nisl/Works/Yunchuan_OneAstronomy/cache/cosmogrid_adv/
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        every_n_train_steps: 200
+        monitor: val_mse
+        mode: min
+        save_top_k: 3
+        auto_insert_metric_name: true
+        filename: '{epoch:04d}-{step:06d}-{val_mse:.6f}'
+    - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+      init_args:
+        logging_interval: step
+  default_root_dir: /home/nisl/Works/Yunchuan_OneAstronomy/cache/cosmogrid_adv/0
+  max_epochs: 101
+  min_epochs: 1
+  val_check_interval: 200
+  log_every_n_steps: 4
+  gradient_clip_val: null
+  gradient_clip_algorithm: null
+  detect_anomaly: true
+  enable_model_summary: true
+  limit_val_batches: 0.2
+  limit_train_batches: 0.8
+
+
+  # 以下配置项为默认值
+  accelerator: auto
+  devices: auto
+  strategy: ddp_find_unused_parameters_true
+  num_nodes: 1
+  precision: null
+  fast_dev_run: false
+  max_steps: -1
+  min_steps: null
+  max_time: null
+#  limit_train_batches: null
+  limit_test_batches: null
+  limit_predict_batches: null
+  overfit_batches: 0.0
+  check_val_every_n_epoch: null
+  num_sanity_val_steps: null
+  enable_checkpointing: null
+  enable_progress_bar: null
+  accumulate_grad_batches: 1
+  deterministic: null
+  benchmark: null
+  inference_mode: true
+  use_distributed_sampler: true
+  profiler: null
+  barebones: false
+  plugins: null
+  sync_batchnorm: false
+  reload_dataloaders_every_n_epochs: 0
+  model_registry: null
+
+seed_everything: true
+ckpt_path: null

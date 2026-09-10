@@ -1,0 +1,11 @@
+# Large binary files (exceed GitHub 100MB limit / huge total size)
+weights/*.ckpt
+data/cosmogrid_data/content/*.npy
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.so
+
+# OS
+.DS_Store
