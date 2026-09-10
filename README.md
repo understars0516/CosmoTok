@@ -13,6 +13,39 @@ pixels).
 
 ---
 
+## ⚡ Quick restore — get the model & data runnable quickly
+
+The **checkpoint** (`weights/best_cosmogrid_adv.ckpt`, ~1.99 GB) and the
+**dataset field images** (`data/cosmogrid_data/content/*.npy`, 100 files, ~1.2 GB)
+are **too large for Git/GitHub**. They are hosted on **Google Drive**:
+
+| Asset | Where it goes |
+|---|---|
+| `weights/best_cosmogrid_adv.ckpt` | [Google Drive → best_cosmogrid_adv.ckpt](<GOOGLE_DRIVE_WEIGHTS_LINK>) |
+| `data/cosmogrid_data/content/*.npy` | [Google Drive → cosmogrid content/](<GOOGLE_DRIVE_DATA_LINK>) |
+
+After downloading from Drive, place the files at the exact paths above
+(create the folder `data/cosmogrid_data/content/` and drop the 100
+`baryonified512_*.npy` files there; put the `.ckpt` under `weights/`).
+
+Then you can run inference:
+
+```bash
+# from the repository root
+python3 inference.py --ckpt weights/best_cosmogrid_adv.ckpt \
+  --data-root data/cosmogrid_data \
+  --content-file data/cosmogrid_data/content/baryonified512_036.npy \
+  --rearr ../rearr_nside512.npy \
+  --out-dir ./assets --save-maps --save-cl --save-patches
+```
+
+> The small index files (`index.json`, `train/valid/test-index.json`,
+> `stats.pkl`) and the 25 MB `arr_nside512_192x128x128.npy` layout map are
+> **already committed to this repo**, so only the two Google-Drive downloads
+> above are needed.
+
+---
+
 ## Repository layout
 
 ```
@@ -28,9 +61,9 @@ pixels).
 │   └── imgemb/                   ← embedding/inference helpers
 ├── aion/                         ← 'aion' codec library (aion.codecs.*) source dep
 ├── data/
-│   └── cosmogrid_data/           ← dataset (indexes + content files + stats)
+│   └── cosmogrid_data/           ← dataset (indexes + stats committed; content/*.npy on Google Drive)
 ├── weights/
-│   └── best_cosmogrid_adv.ckpt   ← best run_adv checkpoint (val_mse 0.130104)
+│   └── best_cosmogrid_adv.ckpt   ← checkpoint — NOT in git, download from Google Drive
 └── assets/                       ← generated analysis images (this README embeds them)
 ```
 
@@ -49,6 +82,11 @@ pixels).
 ---
 
 ## Quick start: run inference
+
+> **First time?** The checkpoint and the dataset field files are NOT in this git repo.
+> Download them from the Google Drive links in the **Quick restore** section above and
+> place them at `weights/best_cosmogrid_adv.ckpt` and
+> `data/cosmogrid_data/content/*.npy`.
 
 Make the checkpoint, data indexes and the `rearr` permutation visible, then run:
 

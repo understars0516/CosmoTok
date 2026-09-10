@@ -1,11 +1,14 @@
-# Large binary files (exceed GitHub 100MB limit / huge total size)
+# ---- Large binary files: excluded from git, hosted on Google Drive ----
+# weights (checkpoint): weights/best_cosmogrid_adv.ckpt        -> Google Drive /CosmoTok-weights
 weights/*.ckpt
+weights/*.ckpt.part*
+weights/*.ckpt.manifest.json
 data/cosmogrid_data/content/*.npy
 
-# Python caches
+# ---- Python caches ----
 __pycache__/
 *.py[cod]
 *.so
 
-# OS
+# ---- OS noise ----
 .DS_Store
