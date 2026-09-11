@@ -116,7 +116,7 @@ Full-sky map (original vs reconstruction, histogram equalized):
 
 ![Composed sky map](assets/sky_mollview.png)
 
-TT angular power spectrum `Cℓ` (original vs reconstruction):
+Angular power spectrum `Cℓ` (original vs reconstruction):
 
 ![Power spectrum](assets/cl_comparison.png)
 
