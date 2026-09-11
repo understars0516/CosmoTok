@@ -127,20 +127,3 @@ Sample patches (original top | adv-reconstruction):
 
 The reconstruction preserves small-scale structure and the power spectrum down to arc-minute scales (ℓ ≈ 1000).
 
----
-
-## 8. Repository layout
-
-```
-src/            model & data code (imgtok, astro_utils, imgemb)
-aion/           'aion' codec library (aion.codecs.*) — local source dependency
-analysis/       analysis scripts (plot_cl, plot_cls, plot_cl_hp2, plot_patch, plot_skymap …)
-data/cosmogrid_data/   indexes + stats (committed); content/*.npy (Google Drive)
-weights/        checkpoints (Google Drive, not in git)
-assets/         generated figures
-inference.py    end-to-end inference: patches → sky map → Cℓ → plots
-plot_skymap.py  healpy full-sky map (mollview)
-plot_patch.py   patch comparison (original | adv-reconstruction)
-run_adv.sh      training launcher (adversarial)
-run_base.sh     training launcher (base)
-```
