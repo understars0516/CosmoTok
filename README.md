@@ -75,12 +75,8 @@ The scripts in `analysis/` reconstruct fields and compare the base vs. adversari
 ```bash
 # 1. Reconstruct all 192 patches → origs.npy / preds.npy
 python analysis/plot_cl.py --ckpt weights/best_cosmogrid_base.ckpt --output-dir results
-mv results/origs.npy results/orig_base.npy
-mv results/preds.npy results/pred_base.npy
 
 python analysis/plot_cl.py --ckpt weights/best_cosmogrid_adv.ckpt --output-dir results
-mv results/origs.npy results/orig_adv.npy
-mv results/preds.npy results/pred_adv.npy
 
 # 2. TT power spectrum comparison (orig vs recon)
 python analysis/plot_cl_hp2.py --results-dir results --output TT_cl_comparison_diff.png
