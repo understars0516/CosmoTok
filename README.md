@@ -13,7 +13,7 @@ Two model variants are provided:
 
 ## 1. Environment
 
-Use the `cosmogrid` conda environment (Python 3.12). **Do not** use the `base` env (Python 3.11) — it lacks the required dependencies.
+Use the `cosmogrid` conda environment (Python 3.12).
 
 ```bash
 conda create -n cosmogrid python=3.12
