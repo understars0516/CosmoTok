@@ -16,6 +16,7 @@ Two model variants are provided:
 Use the `cosmogrid` conda environment (Python 3.12). **Do not** use the `base` env (Python 3.11) — it lacks the required dependencies.
 
 ```bash
+conda create -n cosmogrid python=3.12
 conda activate cosmogrid
 pip install -r requirements.txt
 ```
